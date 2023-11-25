@@ -88,6 +88,54 @@ app.post('/joboffer', async (req, res) => {
     }
 });
 
+app.put('/joboffer/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updateJobOffer = req.body;
+        const result = await JobOfferModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    jobTitle: updateJobOffer.jobTitle,
+                    jobType: updateJobOffer.jobType,
+                    skills: updateJobOffer.skills,
+                    salary: updateJobOffer.salary,
+                    today: updateJobOffer.today,
+                    date: updateJobOffer.date,
+                    description: updateJobOffer.description,
+                }
+            },
+            { new: true } // { new: true } returns the modified document
+        );
+        console.log(result);
+        res.send(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+
+})
+
+
+
+
+
+app.delete('/joboffer/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await JobOfferModel.findByIdAndDelete(id);
+        res.send(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
+
+
+
+
+
+
 
 app.get('/', (req, res) => {
     // res.send('Mongoose server is running');
