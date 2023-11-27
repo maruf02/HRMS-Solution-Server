@@ -32,8 +32,17 @@ const jobOfferSchema = new mongoose.Schema({
     description: { type: String, required: true },
 
 }, { versionKey: false });
+const applicationSchema = new mongoose.Schema({
+    jobId: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    cover: { type: String, required: true },
+    resume: { type: String, required: true },
+    user: { type: String, required: true },
+}, { versionKey: false });
 
 const JobOfferModel = mongoose.model('jobOffer', jobOfferSchema);
+const ApplicationModel = mongoose.model('application', applicationSchema);
 
 // jobOffer related api for mongoose
 
@@ -131,6 +140,60 @@ app.delete('/joboffer/:id', async (req, res) => {
 
 
 
+
+
+
+
+//*********** */
+
+app.get('/application', async (req, res) => {
+    try {
+        const result = await ApplicationModel.find();
+        // console.log(result);
+        res.send(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+app.get('/application/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const result = await ApplicationModel.findById(id);
+        res.send(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+app.post('/application', async (req, res) => {
+    try {
+        const { jobId,
+            name,
+            email,
+            cover,
+            resume,
+            user,
+        } = req.body;
+
+        const application = {
+            jobId,
+            name,
+            email,
+            cover,
+            resume,
+            user,
+        };
+        console.log('mongoose', application);
+        const result = await ApplicationModel.create(application);
+        console.log(result);
+        res.send(result);
+        // res.json(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
 
 
