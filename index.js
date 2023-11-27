@@ -265,6 +265,14 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(role);
+            const query = { email: email }
+            const result = await AllUsersCollection.findOne(query);
+            res.send(result);
+        })
+
 
 
 
