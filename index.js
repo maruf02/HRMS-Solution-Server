@@ -48,6 +48,7 @@ async function run() {
         // await client.connect();
         const AllUsersCollection = client.db('HRMS').collection('UsersInfo');
         const AllWorkSheetCollection = client.db('HRMS').collection('WorkSheet');
+        const AllPaymentSheetCollection = client.db('HRMS').collection('payment');
 
         // auth related api
         // Jwt for cookies
@@ -730,9 +731,26 @@ async function run() {
         // *************************************************
 
 
+        app.get('/payment', async (req, res) => {
+            const result = await AllPaymentSheetCollection.find().toArray();
+            res.send(result);
+        })
+        app.get('/payment/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(role);
+            const query = { payEmail: email }
+            const result = await AllPaymentSheetCollection.find(query).toArray();
+            res.send(result);
+        })
 
 
-
+        app.post('/payment', async (req, res) => {
+            const newPayment = req.body;
+            console.log(newPayment);
+            const result = await AllPaymentSheetCollection.insertOne(newPayment);
+            console.log(result);
+            res.send(result);
+        })
 
 
 
