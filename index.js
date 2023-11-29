@@ -753,7 +753,55 @@ async function run() {
         })
 
 
+        app.get('/paymentChart/:email', async (req, res) => {
+            try {
+                const email = req.params.email;
+                console.log(email);
+                // Use aggregation pipeline to group, sort, and project the data
+                const result = await AllPaymentSheetCollection.aggregate([
+                    // Match documents based on the provided email
+                    { $match: { payEmail: email } },
 
+                    // Group by payMonth and payYear, and calculate the max paySalary for each group
+                    {
+                        $group: {
+                            _id: { payMonth: "$payMonth", payYear: "$payYear" },
+                            maxPaySalary: { $max: { $toDouble: "$paySalary" } }
+                        }
+                    },
+
+                    // Sort the grouped data by payMonth and payYear
+                    { $sort: { "_id.payYear": 1, "_id.payMonth": 1 } },
+
+                    // Project the final output with the desired format
+                    {
+                        $project: {
+                            _id: 0,
+                            entry: {
+                                // $concat: ["$_id.payYear", ",", { $substr: ["$_id.payMonth", 0, 3] }],
+                                // $concat: ["$_id.payMonth", ",", { $substr: ["$_id.payYear", 2, -1] }],
+                                $concat: [
+                                    { $substr: ["$_id.payMonth", 0, 3] },
+                                    ",",
+                                    { $substr: ["$_id.payYear", 2, -1] }
+                                ]
+
+                            },
+                            // maxPaySalaryFormatted: {
+                            //     $concat: ["$", { $toString: "$maxPaySalary" }]
+                            // }
+                            // maxPaySalaryFormatted: { $concat: ["", "$maxPaySalary"] }
+                            maxPaySalaryFormatted: { $concat: ["", { $substr: ["$maxPaySalary", 0, -1] }] }
+                        }
+                    }
+                ]).toArray();
+
+                res.send(result);
+            } catch (error) {
+                console.error("Error fetching payment data:", error);
+                res.status(500).send("Internal Server Error");
+            }
+        });
 
 
 
