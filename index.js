@@ -7,6 +7,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 const mongooseApp = require('./Mongoose/mongoose');
+// *********additinal******
+const moment = require('moment');
+// *********additinal******
 
 
 app.use('/mongoose', mongooseApp);
@@ -257,7 +260,7 @@ async function run() {
 
 
         // Role wise check ends
-
+        // **for hr
         app.get('/users/employee', async (req, res) => {
             const role = 'Employee';
             console.log(role);
@@ -265,6 +268,8 @@ async function run() {
             const result = await AllUsersCollection.find(query).toArray();
             res.send(result);
         })
+
+
 
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -332,9 +337,12 @@ async function run() {
             const result = await AllWorkSheetCollection.find().toArray();
             res.send(result);
         })
-
-
-
+        // app.get('/worksheet/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const result = await AllWorkSheetCollection.findOne(query);
+        //     res.send(result);
+        // })
 
         // app.get('/worksheetemail/:email', async (req, res) => {
         //     const email = req.params.email;
@@ -351,7 +359,12 @@ async function run() {
             res.send(result);
         })
 
-
+        // app.get('/worksheetemailid/:email/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const result = await AllWorkSheetCollection.findOne(query);
+        //     res.send(result);
+        // })
         app.get('/worksheet/:email/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -359,21 +372,126 @@ async function run() {
             res.send(result);
         })
 
+        // app.get('/worksheetemaildate/:email/:date', async (req, res) => {
+        //     // const inputDate = req.params.date;
+        //     const inputDate = 'Nov 4, 2023';
 
-        // app.get('/worksheet/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     // console.log(id);
-        //     const query = { _id: new ObjectId(id) }
-        //     // console.log(query);
+        //     const query = { date: inputDate };
+
         //     const result = await AllWorkSheetCollection.findOne(query);
-        //     // console.log(result);
         //     res.send(result);
-        // })
+
+        // });
+
+        // app.get('/worksheetemaildate/:email/:month/:year', async (req, res) => {
+
+        //     const inputMonth = 'november'
+        //     const inputYear = '2023'
+        //     const dbDate1 = 'Nov 4, 2023';
+        //     const dbDate12 = 'Nov 5, 2023';
+        //     const dbDate13 = 'Nov 6, 2023';
+        //     const dbDate14 = 'Nov 8, 2023';
+        //     const dbDate15 = 'Dec 4, 2023';
+        //     const dbDate16 = 'Nov 4, 2023';
+
+        //     // Parse the input date using moment
+        //     const parsedDate = moment(inputDate, 'MMM D, YYYY');
+
+        //     // Check if the parsed date has the desired month and year
+        //     const isMonthNov = parsedDate.month() === 10; // Note: Months are zero-indexed in JavaScript (0-11)
+        //     const isYear2023 = parsedDate.year() === 2023;
+
+        //     // If both conditions are true, send true, otherwise send false
+        //     const result = isMonthNov && isYear2023;
+        //     res.send(result);
+        // });
 
 
+        // const dbDates = [
+        //     'Nov 4, 2023',
+        //     'Nov 5, 2023',
+        //     'Nov 6, 2023',
+        //     'Nov 8, 2023',
+        //     'Dec 4, 2023',
+        //     'Nov 4, 2023',
+        // ];
 
+        // app.get('/worksheetemaildate/:email/:month/:year', async (req, res) => {
+        //     const inputMonth = req.params.month.toLowerCase(); // convert to lowercase for case-insensitive comparison
+        //     const inputYear = req.params.year;
 
+        //     // Check if any date in the array matches the input month and year
+        //     const matchingDates = dbDates.filter((dbDate) => {
+        //         const parsedDate = moment(dbDate, 'MMM D, YYYY');
+        //         return (
+        //             parsedDate.month() === moment().month(inputMonth).month() &&
+        //             parsedDate.year() === parseInt(inputYear)
+        //         );
+        //     });
 
+        //     res.send(matchingDates);
+        // });
+
+        // app.get('/worksheetemail/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = { email: email };
+        //     const result = await AllWorkSheetCollection.find(query).toArray();
+        //     res.send(result);
+        // });
+
+        // app.get('/worksheetemail/:email/:month/:year', async (req, res) => {
+        //     const email = req.params.email;
+        //     const inputMonth = req.params.month.toLowerCase();
+        //     const inputYear = req.params.year;
+
+        //     // Fetch data from MongoDB based on the provided email
+        //     const rawData = await AllWorkSheetCollection.find({ email: email }).lean();
+
+        //     // Filter the data based on the user's input for month and year
+        //     const matchingData = rawData.filter(item => {
+        //         const parsedDate = moment(item.date, 'MMM D, YYYY');
+        //         return (
+        //             parsedDate.month() === moment().month(inputMonth).month() &&
+        //             parsedDate.year() === parseInt(inputYear)
+        //         );
+        //     });
+
+        //     res.send(matchingData);
+        // });
+
+        // app.get('/worksheetemail/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     try {
+        //         const result = await AllWorkSheetCollection.find({ email: email }).exec();
+        //         res.send(result);
+        //     } catch (error) {
+        //         res.status(500).send({ message: error.message });
+        //     }
+        // });
+
+        // app.get('/worksheetemail/:email/:month/:year', async (req, res) => {
+        //     const email = req.params.email;
+        //     const inputMonth = req.params.month.toLowerCase();
+        //     const inputYear = req.params.year;
+
+        //     try {
+        //         // Fetch data from MongoDB based on the provided email
+        //         const rawData = await AllWorkSheetCollection.find({ email: email }).exec();
+
+        //         // Filter the data based on the user's input for month and year
+        //         const matchingData = rawData.filter(item => {
+        //             const parsedDate = moment(item.date, 'MMM D, YYYY');
+        //             return (
+        //                 parsedDate.month() === moment().month(inputMonth).month() &&
+        //                 parsedDate.year() === parseInt(inputYear)
+        //             );
+        //         });
+
+        //         res.send(matchingData);
+        //     } catch (error) {
+        //         res.status(500).send({ message: error.message });
+        //     }
+        // });
 
 
 
@@ -391,11 +509,119 @@ async function run() {
         })
 
 
+        app.put('/worksheet/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const option = { upsert: true }
+            const updateTask = req.body;
+            const task = {
+                $set: {
+                    name: updateTask.name,
+                    email: updateTask.email,
+                    empId: updateTask.empId,
+                    category: updateTask.category,
+                    hours: updateTask.hours,
+                    overtime: updateTask.overtime,
+                    note: updateTask.note,
+                    date: updateTask.date,
+                    mainSalary: updateTask.mainSalary,
+                    overtimeSalary: updateTask.overtimeSalary,
+
+
+                }
+            }
+
+            const result = await AllWorkSheetCollection.updateOne(filter, task, option);
+            console.log(updateTask);
+            res.send(result);
+
+        })
 
 
 
+        // **********************
+        // **********************
+        app.get('/worksheetCal', async (req, res) => {
+            const result = await AllWorkSheetCollection.find().toArray();
+            res.send(result);
+        })
+        // app.get('/worksheetCal/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const result = await AllWorkSheetCollection.findOne(query);
+        //     res.send(result);
+        // })
+
+        app.get('/worksheetCal/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(role);
+            const query = { email: email }
+            const result = await AllWorkSheetCollection.find(query).toArray();
+            res.send(result);
+        })
+        // app.get('/worksheetCal/:email/:month', async (req, res) => {
+        //     const month = req.params.month;
+        //     // console.log(role);
+        //     const query = { month: month }
+        //     const result = await AllWorkSheetCollection.find(query).toArray();
+        //     res.send(result);
+        // })
+        app.get('/worksheetCal/:email/:month/:year', async (req, res) => {
+            const month = req.params.month;
+            const year = req.params.year;
+            // console.log(role);
+            const query = { month: month, year: year }
+            const result = await AllWorkSheetCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get('/worksheetCal/:email/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await AllWorkSheetCollection.findOne(query);
+            res.send(result);
+        })
+
+        // **********************
+        // **********************
 
 
+        // app.get('/worksheetCal/:email/:month/:year', async (req, res) => {
+        //     const email = req.params.email;
+        //     const month = req.params.month;
+        //     const year = req.params.year;
+        //     // const year = parseInt(req.params.year);
+
+        //     const pipeline = [
+        //         {
+        //             $match: {
+        //                 email: email,
+        //                 month: month,
+        //                 year: year
+        //             }
+        //         },
+        //         {
+        //             $group: {
+        //                 _id: null,
+        //                 totalCount: { $sum: 1 }
+        //             }
+        //         }
+        //     ];
+
+
+        //     try {
+        //         const result = await AllWorkSheetCollection.aggregate(pipeline).toArray();
+
+        //         // Extract the totalCount from the result
+        //         const totalCount = result.length > 0 ? result[0].totalCount : 0;
+        //         console.log(totalCount);
+        //         res.send({
+        //             totalCount: totalCount
+        //         });
+        //     } catch (error) {
+        //         res.status(500).send({ message: error.message });
+        //     }
+        // });
 
 
 
@@ -408,99 +634,101 @@ async function run() {
 
         // ekjon employee kotota project + koto hour kaj korce +totalmain salary+ total overtime salary+totalsalary, 
 
-        app.get('/employeeSummary/:email', async (req, res) => {
+        // app.get('/employeeSummary/:email', async (req, res) => {
 
-            const email = req.params.email;
-            const aggregateResult = await AllWorkSheetCollection.aggregate([
-                { $match: { email: email } },
-                {
-                    $group: {
-                        _id: '$email',
-                        totalWorks: { $sum: 1 },
-                        totalHours: { $sum: { $toInt: '$hours' } },
-                        totaloverHours: { $sum: { $toInt: '$overtime' } },
-                        totalUniqueDaysWorked: { $addToSet: { $dateFromString: { dateString: '$date' } } },
-                        totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
-                        totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
-                        totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
+        //     const email = req.params.email;
+        //     const aggregateResult = await AllWorkSheetCollection.aggregate([
+        //         { $match: { email: email } },
+        //         {
+        //             $group: {
+        //                 _id: '$email',
+        //                 totalWorks: { $sum: 1 },
+        //                 totalHours: { $sum: { $toInt: '$hours' } },
+        //                 totaloverHours: { $sum: { $toInt: '$overtime' } },
+        //                 totalUniqueDaysWorked: { $addToSet: { $dateFromString: { dateString: '$date' } } },
+        //                 totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
+        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
+        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
 
 
-                    }
-                },
-                {
-                    $addFields: {
-                        totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
-                        _id: 1,
-                        totalWorks: 1,
-                        totalHours: 1,
-                        totaloverHours: 1,
-                        totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
-                        totalMainSalary: 1,
-                        totalOvertimeSalary: 1,
-                        totalSalary: 1
-                    }
-                }
-            ]).toArray();
+        //             }
+        //         },
+        //         {
+        //             $addFields: {
+        //                 totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
+        //             }
+        //         },
+        //         {
+        //             $project: {
+        //                 _id: 0,
+        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
+        //                 _id: 1,
+        //                 totalWorks: 1,
+        //                 totalHours: 1,
+        //                 totaloverHours: 1,
+        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
+        //                 totalMainSalary: 1,
+        //                 totalOvertimeSalary: 1,
+        //                 totalSalary: 1
+        //             }
+        //         }
+        //     ]).toArray();
 
-            res.send(aggregateResult);
-        })
+        //     res.send(aggregateResult);
+        // })
 
 
 
         // month wise
 
 
-        app.get('/employeeSummarymonth/:email', async (req, res) => {
+        // app.get('/employeeSummarymonth/:email', async (req, res) => {
 
-            const email = req.params.email;
-            const aggregateResult = await AllWorkSheetCollection.aggregate([
-                {
-                    $addFields: {
-                        month: { $month: { $dateFromString: { dateString: '$date' } } }
-                    }
-                },
-                {
-                    $group: {
-                        _id: { $dateToString: { format: '%Y-%m', date: { $dateFromString: { dateString: '$date' } } } },
-                        totalWorks: { $sum: 1 },
-                        totalHours: { $sum: { $toInt: '$hours' } },
-                        totaloverHours: { $sum: { $toInt: '$overtime' } },
-                        totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
-                        totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
-                        totalUniqueDaysWorked: { $addToSet: { $dateToString: { format: '%Y-%m-%d', date: { $dateFromString: { dateString: '$date' } } } } }
-                    }
-                },
-                {
-                    $addFields: {
-                        totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        month: '$_id',
-                        totalWorks: 1,
-                        totalHours: 1,
-                        totaloverHours: 1,
-                        totalMainSalary: 1,
-                        totalOvertimeSalary: 1,
-                        totalSalary: 1,
-                        totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' }
-                    }
-                },
-                {
-                    $sort: { month: 1 } // Sort the results by month in ascending order (optional)
-                }
-            ]).toArray();
+        //     const email = req.params.email;
+        //     const aggregateResult = await AllWorkSheetCollection.aggregate([
+        //         {
+        //             $addFields: {
+        //                 month: { $month: { $dateFromString: { dateString: '$date' } } }
+        //             }
+        //         },
+        //         {
+        //             $group: {
+        //                 _id: { $dateToString: { format: '%Y-%m', date: { $dateFromString: { dateString: '$date' } } } },
+        //                 totalWorks: { $sum: 1 },
+        //                 totalHours: { $sum: { $toInt: '$hours' } },
+        //                 totaloverHours: { $sum: { $toInt: '$overtime' } },
+        //                 totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
+        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
+        //                 totalUniqueDaysWorked: { $addToSet: { $dateToString: { format: '%Y-%m-%d', date: { $dateFromString: { dateString: '$date' } } } } }
+        //             }
+        //         },
+        //         {
+        //             $addFields: {
+        //                 totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
+        //             }
+        //         },
+        //         {
+        //             $project: {
+        //                 _id: 0,
+        //                 month: '$_id',
+        //                 totalWorks: 1,
+        //                 totalHours: 1,
+        //                 totaloverHours: 1,
+        //                 totalMainSalary: 1,
+        //                 totalOvertimeSalary: 1,
+        //                 totalSalary: 1,
+        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' }
+        //             }
+        //         },
+        //         {
+        //             $sort: { month: 1 } // Sort the results by month in ascending order (optional)
+        //         }
+        //     ]).toArray();
 
-            res.send(aggregateResult);
-        })
+        //     res.send(aggregateResult);
+        // })
+        // *************************************************
+
 
 
 
