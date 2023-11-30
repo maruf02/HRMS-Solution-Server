@@ -49,6 +49,7 @@ async function run() {
         const AllUsersCollection = client.db('HRMS').collection('UsersInfo');
         const AllWorkSheetCollection = client.db('HRMS').collection('WorkSheet');
         const AllPaymentSheetCollection = client.db('HRMS').collection('payment');
+        const AllContactUsCollection = client.db('HRMS').collection('contact');
 
         // auth related api
         // Jwt for cookies
@@ -109,7 +110,7 @@ async function run() {
 
 
         const verifyToken = (req, res, next) => {
-            // console.log('inside verify token', req.headers.authorization);
+            // console.log('inside token', req.headers.authorization);
             if (!req.headers.authorization) {
                 return res.status(401).send({ message: 'unauthorized access' });
             }
@@ -196,7 +197,7 @@ async function run() {
 
         // All Create api works here
         // All Users Api
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
             const cursor = AllUsersCollection.find();
             const result = await cursor.toArray();
             res.send(result);
@@ -262,7 +263,7 @@ async function run() {
 
         // Role wise check ends
         // **for hr
-        app.get('/users/employee', async (req, res) => {
+        app.get('/users/employee', verifyToken, verifyHr, async (req, res) => {
             const role = 'Employee';
             console.log(role);
             const query = { role: role }
@@ -320,7 +321,7 @@ async function run() {
 
 
 
-        app.delete('/users/:id', async (req, res) => {
+        app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await AllUsersCollection.deleteOne(query);
@@ -495,8 +496,18 @@ async function run() {
         // });
 
 
+        app.get('/contact', async (req, res) => {
+            const result = await AllContactUsCollection.find().toArray();
+            res.send(result);
+        })
 
-
+        app.post('/contact', async (req, res) => {
+            const newWorkSheet = req.body;
+            console.log(newWorkSheet);
+            const result = await AllContactUsCollection.insertOne(newWorkSheet);
+            console.log(result);
+            res.send(result);
+        })
 
 
 
@@ -587,155 +598,14 @@ async function run() {
         // **********************
 
 
-        // app.get('/worksheetCal/:email/:month/:year', async (req, res) => {
-        //     const email = req.params.email;
-        //     const month = req.params.month;
-        //     const year = req.params.year;
-        //     // const year = parseInt(req.params.year);
-
-        //     const pipeline = [
-        //         {
-        //             $match: {
-        //                 email: email,
-        //                 month: month,
-        //                 year: year
-        //             }
-        //         },
-        //         {
-        //             $group: {
-        //                 _id: null,
-        //                 totalCount: { $sum: 1 }
-        //             }
-        //         }
-        //     ];
-
-
-        //     try {
-        //         const result = await AllWorkSheetCollection.aggregate(pipeline).toArray();
-
-        //         // Extract the totalCount from the result
-        //         const totalCount = result.length > 0 ? result[0].totalCount : 0;
-        //         console.log(totalCount);
-        //         res.send({
-        //             totalCount: totalCount
-        //         });
-        //     } catch (error) {
-        //         res.status(500).send({ message: error.message });
-        //     }
-        // });
-
-
-
-
-
-
-
-
-        // Employee worksheet/submitted task api
-
-        // ekjon employee kotota project + koto hour kaj korce +totalmain salary+ total overtime salary+totalsalary, 
-
-        // app.get('/employeeSummary/:email', async (req, res) => {
-
-        //     const email = req.params.email;
-        //     const aggregateResult = await AllWorkSheetCollection.aggregate([
-        //         { $match: { email: email } },
-        //         {
-        //             $group: {
-        //                 _id: '$email',
-        //                 totalWorks: { $sum: 1 },
-        //                 totalHours: { $sum: { $toInt: '$hours' } },
-        //                 totaloverHours: { $sum: { $toInt: '$overtime' } },
-        //                 totalUniqueDaysWorked: { $addToSet: { $dateFromString: { dateString: '$date' } } },
-        //                 totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
-        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
-        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
-
-
-        //             }
-        //         },
-        //         {
-        //             $addFields: {
-        //                 totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
-        //             }
-        //         },
-        //         {
-        //             $project: {
-        //                 _id: 0,
-        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
-        //                 _id: 1,
-        //                 totalWorks: 1,
-        //                 totalHours: 1,
-        //                 totaloverHours: 1,
-        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' },
-        //                 totalMainSalary: 1,
-        //                 totalOvertimeSalary: 1,
-        //                 totalSalary: 1
-        //             }
-        //         }
-        //     ]).toArray();
-
-        //     res.send(aggregateResult);
-        // })
-
-
-
-        // month wise
-
-
-        // app.get('/employeeSummarymonth/:email', async (req, res) => {
-
-        //     const email = req.params.email;
-        //     const aggregateResult = await AllWorkSheetCollection.aggregate([
-        //         {
-        //             $addFields: {
-        //                 month: { $month: { $dateFromString: { dateString: '$date' } } }
-        //             }
-        //         },
-        //         {
-        //             $group: {
-        //                 _id: { $dateToString: { format: '%Y-%m', date: { $dateFromString: { dateString: '$date' } } } },
-        //                 totalWorks: { $sum: 1 },
-        //                 totalHours: { $sum: { $toInt: '$hours' } },
-        //                 totaloverHours: { $sum: { $toInt: '$overtime' } },
-        //                 totalMainSalary: { $sum: { $toDouble: '$mainSalary' } },
-        //                 totalOvertimeSalary: { $sum: { $toDouble: '$overtimeSalary' } },
-        //                 totalUniqueDaysWorked: { $addToSet: { $dateToString: { format: '%Y-%m-%d', date: { $dateFromString: { dateString: '$date' } } } } }
-        //             }
-        //         },
-        //         {
-        //             $addFields: {
-        //                 totalSalary: { $add: ['$totalMainSalary', '$totalOvertimeSalary'] }
-        //             }
-        //         },
-        //         {
-        //             $project: {
-        //                 _id: 0,
-        //                 month: '$_id',
-        //                 totalWorks: 1,
-        //                 totalHours: 1,
-        //                 totaloverHours: 1,
-        //                 totalMainSalary: 1,
-        //                 totalOvertimeSalary: 1,
-        //                 totalSalary: 1,
-        //                 totalUniqueDaysWorked: { $size: '$totalUniqueDaysWorked' }
-        //             }
-        //         },
-        //         {
-        //             $sort: { month: 1 } // Sort the results by month in ascending order (optional)
-        //         }
-        //     ]).toArray();
-
-        //     res.send(aggregateResult);
-        // })
         // *************************************************
 
 
-        app.get('/payment', async (req, res) => {
+        app.get('/payment', verifyToken, async (req, res) => {
             const result = await AllPaymentSheetCollection.find().toArray();
             res.send(result);
         })
-        app.get('/payment/:email', async (req, res) => {
+        app.get('/payment/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             // console.log(role);
             const query = { payEmail: email }
@@ -757,12 +627,12 @@ async function run() {
             try {
                 const email = req.params.email;
                 console.log(email);
-                // Use aggregation pipeline to group, sort, and project the data
+
                 const result = await AllPaymentSheetCollection.aggregate([
-                    // Match documents based on the provided email
+
                     { $match: { payEmail: email } },
 
-                    // Group by payMonth and payYear, and calculate the max paySalary for each group
+
                     {
                         $group: {
                             _id: { payMonth: "$payMonth", payYear: "$payYear" },
@@ -770,10 +640,10 @@ async function run() {
                         }
                     },
 
-                    // Sort the grouped data by payMonth and payYear
+
                     { $sort: { "_id.payYear": 1, "_id.payMonth": 1 } },
 
-                    // Project the final output with the desired format
+
                     {
                         $project: {
                             _id: 0,
